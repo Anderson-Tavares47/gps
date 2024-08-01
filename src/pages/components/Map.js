@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
+import * as turf from '@turf/turf';
 
 const Map = ({ routeCoordinates }) => {
   const [leaflet, setLeaflet] = useState(null);
@@ -35,51 +36,30 @@ const Map = ({ routeCoordinates }) => {
     return <div>Loading map...</div>;
   }
 
-  const { MapContainer, TileLayer, Circle, Polyline, useMapEvents } = mapComponents;
+  const { MapContainer, TileLayer, Polygon, Polyline, useMapEvents } = mapComponents;
 
-  const haversineDistance = (coords1, coords2) => {
-    const toRad = (x) => (x * Math.PI) / 180;
-    const lat1 = coords1[0];
-    const lon1 = coords1[1];
-    const lat2 = coords2[0];
-    const lon2 = coords2[1];
-    const R = 6371;
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
-
-  const getSpacedCircles = (coords, interval) => {
-    let distance = 0;
-    const circles = [coords[0]];
-    for (let i = 1; i < coords.length; i++) {
-      distance += haversineDistance(coords[i - 1], coords[i]);
-      if (distance >= interval) {
-        circles.push(coords[i]);
-        distance = 0;
-      }
+  const createFencePolygon = (coords, bufferDistance) => {
+    if (coords.length < 2) {
+      return []; // Retorna um array vazio se não houver pontos suficientes para criar uma linha
     }
-    return circles;
+    // Converte as coordenadas para o formato [longitude, latitude]
+    const lineCoords = coords.map(coord => [coord[1], coord[0]]);
+    const line = turf.lineString(lineCoords);
+    const buffered = turf.buffer(line, bufferDistance, { units: 'kilometers' });
+    return buffered.geometry.coordinates[0];
   };
 
-  const LocationMarker = ({ routeCoordinates }) => {
+  const LocationMarker = ({ fencePolygon }) => {
     const [alertShown, setAlertShown] = useState(false);
     const map = useMapEvents({
       locationfound(e) {
-        const userLocation = [e.latlng.lat, e.latlng.lng];
-        const isInsideAnyCircle = routeCoordinates.some(center => {
-          const distance = map.distance(center, userLocation);
-          return distance <= 3000;
-        });
+        const userLocation = [e.latlng.lng, e.latlng.lat];
+        const isInsideFence = turf.booleanPointInPolygon(turf.point(userLocation), turf.polygon([fencePolygon]));
 
-        if (!isInsideAnyCircle && !alertShown) {
-          alert('Você saiu do raio de 3 km!');
+        if (!isInsideFence && !alertShown) {
+          alert('Você saiu da cerca de 3 km!');
           setAlertShown(true);
-        } else if (isInsideAnyCircle && alertShown) {
+        } else if (isInsideFence && alertShown) {
           setAlertShown(false);
         }
       }
@@ -92,7 +72,7 @@ const Map = ({ routeCoordinates }) => {
     return null;
   };
 
-  const spacedCircles = getSpacedCircles(routeCoordinates, 5.5);
+  const fencePolygon = createFencePolygon(routeCoordinates, 3);
 
   return (
     <MapContainer center={routeCoordinates[0] || [-30.0346, -51.2177]} zoom={6} style={{ height: '100vh', width: '100%' }}>
@@ -103,19 +83,17 @@ const Map = ({ routeCoordinates }) => {
       {routeCoordinates.length > 0 && (
         <>
           <Polyline positions={routeCoordinates} color="black" />
-          {spacedCircles.map((coord, index) => (
-            <Circle
-              key={index}
-              center={coord}
-              radius={3000}
+          {fencePolygon.length > 0 && (
+            <Polygon
+              positions={fencePolygon.map(coord => [coord[1], coord[0]])}
               pathOptions={{
                 color: 'red',
                 fillColor: 'none',
                 fillOpacity: 0,
               }}
             />
-          ))}
-          <LocationMarker routeCoordinates={spacedCircles} />
+          )}
+          <LocationMarker fencePolygon={fencePolygon} />
         </>
       )}
     </MapContainer>
