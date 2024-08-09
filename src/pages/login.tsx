@@ -2,7 +2,7 @@
 import React from 'react';
 import Image from 'next/image';
 import styles from '@/styles/Login.module.css';
-import Logo from '@/assets/img/logo2.png';
+import Logo from '@/assets/img/logo_logaux_v3.png';
 
 const Login = () => {
   return (
