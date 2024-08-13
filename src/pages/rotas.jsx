@@ -40,7 +40,7 @@ const RouteConfig = () => {
           <Loader /> // Exibe o componente Loader durante o carregamento
         ) : (
           routes.length > 0 ? (
-            <div >
+            <div style={{ height: 'calc(100vh - 20px)', width: '100%' }}>
               <Map allRoutes={allRoutesWithRadius} />
             </div>
           ) : (
