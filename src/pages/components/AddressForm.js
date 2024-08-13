@@ -5,6 +5,7 @@ import { getRoutes } from '@/utils/getRoute';
 const AddressForm = ({ onRoutesSubmit, onRouteSubmit }) => {
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
+  const [radius, setRadius] = useState(3); // Raio padrão de 3km
   const [routes, setRoutes] = useState([]);
 
   const handleSubmit = async (e) => {
@@ -18,7 +19,7 @@ const AddressForm = ({ onRoutesSubmit, onRouteSubmit }) => {
 
       const routes = await getRoutes(startCoordinates, endCoordinates);
       setRoutes(routes);
-      onRoutesSubmit(routes);
+      onRoutesSubmit(routes, radius); // Passa o raio junto com as rotas
     } catch (error) {
       alert('Não foi possível obter as coordenadas para os endereços fornecidos.');
     }
@@ -60,6 +61,17 @@ const AddressForm = ({ onRoutesSubmit, onRouteSubmit }) => {
               placeholder="Endereço de destino"
               value={end}
               onChange={(e) => setEnd(e.target.value)}
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            Raio (km):
+            <input
+              type="number"
+              placeholder="Raio em km"
+              value={radius}
+              onChange={(e) => setRadius(e.target.value)}
             />
           </label>
         </div>
