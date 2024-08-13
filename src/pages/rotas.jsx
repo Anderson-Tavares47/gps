@@ -35,12 +35,12 @@ const RouteConfig = () => {
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       <NavigationMenu />
-      <div style={{ flex: 1, position: 'relative' }}>
+      <div style={{ flex: 1, padding: '10px' }}>
         {isLoading ? (
           <Loader /> // Exibe o componente Loader durante o carregamento
         ) : (
           routes.length > 0 ? (
-            <div style={{ height: '100%' }}>
+            <div >
               <Map allRoutes={allRoutesWithRadius} />
             </div>
           ) : (
@@ -53,4 +53,3 @@ const RouteConfig = () => {
 };
 
 export default RouteConfig;
-
