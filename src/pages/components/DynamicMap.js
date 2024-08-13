@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import * as turf from '@turf/turf';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import { MapContainer, TileLayer, Polygon, Polyline, Marker, Tooltip, useMapEvents } from 'react-leaflet';
+import dynamic from 'next/dynamic'; // Use dynamic import from Next.js
 
 const DynamicMap = ({ allRoutes = [], radius }) => {
-  console.log("Received routes with radius:", allRoutes); // Verifica se as rotas e raios estão sendo recebidos
-  console.log("Default radius:", radius); // Verifica o raio padrão recebido
-
   const [leaflet, setLeaflet] = useState(null);
   const [mapComponents, setMapComponents] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
@@ -41,19 +35,19 @@ const DynamicMap = ({ allRoutes = [], radius }) => {
   }, []);
 
   useEffect(() => {
-    const processRoutes = (routes) => {
-      const routeArray = Array.isArray(routes) ? routes : [routes];
-      const polygons = routeArray.map(route => {
-        const routeRadius = route.radius ? parseFloat(route.radius) : radius;
-        return route.coordinates ? createFencePolygon(route.coordinates, routeRadius) : null;
-      });
-      setFencePolygons(polygons);
-    };
+    if (allRoutes && mapComponents) {
+      const processRoutes = (routes) => {
+        const routeArray = Array.isArray(routes) ? routes : [routes];
+        const polygons = routeArray.map(route => {
+          const routeRadius = route.radius ? parseFloat(route.radius) : radius;
+          return route.coordinates ? createFencePolygon(route.coordinates, routeRadius) : null;
+        });
+        setFencePolygons(polygons);
+      };
 
-    if (allRoutes) {
       processRoutes(allRoutes);
     }
-  }, [allRoutes, radius]);
+  }, [allRoutes, radius, mapComponents]);
 
   const createFencePolygon = (coords, bufferDistance) => {
     if (!coords || coords.length < 2) return null;
