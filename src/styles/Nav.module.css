@@ -104,3 +104,18 @@
     height: 24px;
   }
   
+  @media (max-width: 480px) {
+    .nav {
+        width: 60%;
+      }
+
+      .minimized {
+        max-width: 55px;
+      }
+
+      .logo img {
+        height: 25px !important; /* Metade do tamanho original */
+        width: 100px !important; /* Metade do tamanho original */
+      }
+
+  }
