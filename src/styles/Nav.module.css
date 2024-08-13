@@ -1,0 +1,106 @@
+/* Nav.module.css */
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    background: #091f33;
+    width: 20%;
+    padding: 30px;
+    box-sizing: border-box;
+    transition: width 0.3s ease;
+  }
+  
+  .minimized {
+    width: 60px; /* Largura quando minimizado */
+    padding: 15px; /* Ajusta o padding quando minimizado */
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .menuIcon {
+    cursor: pointer;
+    color: white;
+    font-size: 24px;
+  }
+  
+  .logo {
+    display: flex;
+    justify-content: left;
+    padding: 20px;
+  }
+  
+  .minimized .logo {
+    display: none; /* Esconde o logo quando o menu está minimizado */
+  }
+  
+  .nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 15px;
+  }
+  
+  .nav li {
+    margin: 10px 0;
+    width: 100%;
+  }
+
+  .copy{
+    margin-top: auto;
+    text-align: center;
+    padding: 10px 0;
+    background: #091f33;
+    color: #fff;
+  }
+  
+  .nav a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #fff;
+    padding: 10px 0; /* Remove o padding lateral */
+    width: 100%;
+    transition: background-color 0.3s ease;
+    justify-content: center; /* Centraliza o conteúdo do link */
+  }
+  
+  .nav a:hover {
+    background-color: #fff;
+    color: #091f33;
+    border-radius: 5px;
+  }
+  
+  .iconWrapper {
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centraliza o ícone tanto vertical quanto horizontalmente */
+  }
+  
+  .text {
+    flex: 1;
+    text-align: left;
+    padding-left: 10px;
+    font-size: 20px;
+  }
+  
+  .minimized .text {
+    display: none; /* Esconde o texto quando o menu está minimizado */
+  }
+  
+  .minimized .iconWrapper {
+    width: 50px; /* Define uma largura para o ícone no estado minimizado */
+  }
+  
+  .minimized .iconWrapper svg {
+    width: 24px; /* Ajusta o tamanho do ícone quando minimizado */
+    height: 24px;
+  }
+  
