@@ -127,4 +127,4 @@ const DynamicMap = ({ allRoutes = [], radius }) => {
   );
 };
 
-export default dynamic(() => Promise.resolve(DynamicMap), { ssr: false });
+export default dynamic(() => Promise.resolve(DynamicMap), { ssr: false }); 
