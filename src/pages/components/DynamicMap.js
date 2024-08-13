@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic'; // Use dynamic import from Next.js
+import dynamic from 'next/dynamic';
+import * as turf from '@turf/turf';
+import 'leaflet/dist/leaflet.css';
 
 const DynamicMap = ({ allRoutes = [], radius }) => {
+  console.log("Received routes with radius:", allRoutes); // Verifica se as rotas e raios estão sendo recebidos
+  console.log("Default radius:", radius); // Verifica o raio padrão recebido
+
   const [leaflet, setLeaflet] = useState(null);
   const [mapComponents, setMapComponents] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
@@ -35,19 +40,19 @@ const DynamicMap = ({ allRoutes = [], radius }) => {
   }, []);
 
   useEffect(() => {
-    if (allRoutes && mapComponents) {
-      const processRoutes = (routes) => {
-        const routeArray = Array.isArray(routes) ? routes : [routes];
-        const polygons = routeArray.map(route => {
-          const routeRadius = route.radius ? parseFloat(route.radius) : radius;
-          return route.coordinates ? createFencePolygon(route.coordinates, routeRadius) : null;
-        });
-        setFencePolygons(polygons);
-      };
+    const processRoutes = (routes) => {
+      const routeArray = Array.isArray(routes) ? routes : [routes];
+      const polygons = routeArray.map(route => {
+        const routeRadius = route.radius ? parseFloat(route.radius) : radius;
+        return route.coordinates ? createFencePolygon(route.coordinates, routeRadius) : null;
+      });
+      setFencePolygons(polygons);
+    };
 
+    if (allRoutes) {
       processRoutes(allRoutes);
     }
-  }, [allRoutes, radius, mapComponents]);
+  }, [allRoutes, radius]);
 
   const createFencePolygon = (coords, bufferDistance) => {
     if (!coords || coords.length < 2) return null;
@@ -78,9 +83,10 @@ const DynamicMap = ({ allRoutes = [], radius }) => {
   };
 
   const defaultCenter = [-30.0346, -51.2177];
-  const routeArray = Array.isArray(allRoutes) ? allRoutes : [allRoutes];
-  const firstRoute = routeArray[0];
+  const firstRoute = Array.isArray(allRoutes) ? allRoutes[0] : allRoutes;
   const mapCenter = userLocation || (firstRoute && firstRoute.coordinates && firstRoute.coordinates.length > 0 ? [firstRoute.coordinates[0][0], firstRoute.coordinates[0][1]] : defaultCenter);
+
+  const routeArray = Array.isArray(allRoutes) ? allRoutes : [allRoutes];
 
   return (
     <MapContainer center={mapCenter} zoom={6} style={{ height: '100vh', width: '100%' }}>
@@ -121,4 +127,4 @@ const DynamicMap = ({ allRoutes = [], radius }) => {
   );
 };
 
-export default DynamicMap;
+export default dynamic(() => Promise.resolve(DynamicMap), { ssr: false });
