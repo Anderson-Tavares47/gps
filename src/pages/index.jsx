@@ -98,4 +98,3 @@ const formatDuration = (seconds) => {
 };
 
 export default AddressPage;
- 
